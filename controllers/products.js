@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const ProductModel = require("../models/products");
+const cloudinary = require("../utils/cloudinaryConfig");
+const streamifier = require("streamifier");
 
 const getAllProducts = async (req, res) => {
   try {
@@ -27,15 +29,54 @@ const getOneProduct = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-  const errors = validationResult(req);
+  // const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ msg: errors.array() });
-  }
+  // if (!errors.isEmpty()) {
+  //   return res.status(422).json({ msg: errors.array() });
+  // }
   try {
-    const newProduct = new ProductModel(req.body);
-    await newProduct.save();
-    res.status(201).json({ msg: "Producto creado correctamente", newProduct });
+    let prueba = {
+      nombre: "tablita",
+      precio: 100,
+      descripcion: "tablita piola",
+      categoria: "tablas",
+      medidas: "2x2",
+      materiales: "madera",
+    };
+    const newProduct = new ProductModel(prueba);
+    async function handleImageUpload() {
+      await Promise.all(
+        req.files.map(async (file) => {
+          return new Promise((resolve, reject) => {
+            const cloud = cloudinary.uploader.upload_stream(
+              {
+                format: "png",
+              },
+              async function (error, result) {
+                if (error) {
+                  console.log(error);
+                  reject("Error al subir la imagen");
+                } else {
+                  newProduct.imgs.push(result.secure_url);
+                  resolve();
+                }
+              }
+            );
+            streamifier.createReadStream(file.buffer).pipe(cloud);
+          });
+        })
+      );
+    }
+
+    handleImageUpload()
+      .then(() => {
+        newProduct.save();
+        res.send("ok");
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error });
+      });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo crear el producto", error });
   }

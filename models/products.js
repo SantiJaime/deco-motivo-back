@@ -17,17 +17,22 @@ const ProductSchema = new Schema({
     type: String,
     required: true,
   },
-  imagen: {
+  medidas: {
     type: String,
     required: true,
   },
+  materiales: {
+    type: String,
+    required: true,
+  },
+  imgs: []
 });
 
 ProductSchema.methods.toJSON = function () {
-    const { __v, ...product } = this.toObject();
-    return product;
-  };
-  
-  const ProductModel = model("productos", ProductSchema);
-  
-  module.exports = ProductModel;
+  const { __v, ...product } = this.toObject();
+  return product;
+};
+
+const ProductModel = model("productos", ProductSchema);
+
+module.exports = ProductModel;

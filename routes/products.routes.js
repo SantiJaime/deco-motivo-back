@@ -9,6 +9,7 @@ const {
 const router = express.Router();
 const { check } = require("express-validator");
 const auth = require("../middleware/auth");
+const { upload } = require("../utils/multer");
 
 router.get("/", getAllProducts);
 router.get(
@@ -19,20 +20,22 @@ router.get(
 router.post(
   "/",
   auth(),
-  [
-    check("nombre", "El campo nombre está vacío").notEmpty(),
-    check(
-      "nombre",
-      "Mínimo de 3 caracteres | Máximo de 100 caracteres"
-    ).isLength({
-      min: 3,
-      max: 100,
-    }),
-    check("descripcion", "El campo descripción está vacío").notEmpty(),
-    check("categoria", "El campo categoría está vacío").notEmpty(),
-    check("imagen", "El campo imágen está vacío").notEmpty(),
-    check("precio", " El campo precio está vacío").notEmpty(),
-  ],
+  upload.array("imgs"),
+  // [
+    // check("nombre", "El campo nombre está vacío").notEmpty(),
+    // check(
+    //   "nombre",
+    //   "Mínimo de 3 caracteres | Máximo de 100 caracteres"
+    // ).isLength({
+    //   min: 3,
+    //   max: 100,
+    // }),
+    // check("descripcion", "El campo descripción está vacío").notEmpty(),
+    // check("categoria", "El campo categoría está vacío").notEmpty(),
+    // check("img1", "El campo imágen 1 está vacío").notEmpty(),
+    // check("img2", "El campo imágen 2 está vacío").notEmpty(),
+    // check("precio", " El campo precio está vacío").notEmpty(),
+  // ],
   createProduct
 );
 router.put(
