@@ -31,7 +31,7 @@ const createAdmin = async (req, res) => {
     await newAdmin.save();
     res
       .status(201)
-      .json({ msg: "Usuario administrador creado correctamente", newAdmin });
+      .json({ msg: "Usuario administrador creado correctamente", newAdmin, status:201});
   } catch (error) {
     res
       .status(500)
@@ -72,7 +72,7 @@ const deleteAdmin = async (req, res) => {
     await AdminModel.findByIdAndDelete({ _id: req.params.id });
     res
       .status(200)
-      .json({ msg: "Usuario administrador eliminado correctamente" });
+      .json({ msg: "Usuario administrador eliminado correctamente" , status:200});
   } catch (error) {
     res
       .status(500)
