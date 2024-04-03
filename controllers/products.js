@@ -35,15 +35,7 @@ const createProduct = async (req, res) => {
   //   return res.status(422).json({ msg: errors.array() });
   // }
   try {
-    let prueba = {
-      nombre: "tablita",
-      precio: 100,
-      descripcion: "tablita piola",
-      categoria: "tablas",
-      medidas: "2x2",
-      materiales: "madera",
-    };
-    const newProduct = new ProductModel(prueba);
+    const newProduct = new ProductModel(req.body);
     async function handleImageUpload() {
       await Promise.all(
         req.files.map(async (file) => {
@@ -71,7 +63,13 @@ const createProduct = async (req, res) => {
     handleImageUpload()
       .then(() => {
         newProduct.save();
-        res.send("ok");
+        res
+          .status(201)
+          .json({
+            msg: "Producto creado correctamente",
+            newProduct,
+            status: 201,
+          });
       })
       .catch((error) => {
         console.error(error);
